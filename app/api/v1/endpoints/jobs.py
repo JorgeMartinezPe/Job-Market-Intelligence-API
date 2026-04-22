@@ -6,13 +6,6 @@ from app.services.job_service import JobService
 
 router = APIRouter()
 
-def get_job_service(db: Session = Depends(get_db)):
-    return JobService(db)
-
-@router.get("/", response_model=list[Job])
-def get_jobs(service: JobService = Depends(get_job_service)):
-    return service.get_all_jobs()
-
 @router.post("/", response_model=Job)
-def create_job(job: JobCreate, service: JobService = Depends(get_job_service)):
-    return service.create_job(job)
+def create_job():
+    pass # en proceso

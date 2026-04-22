@@ -2,6 +2,7 @@ from sqlalchemy import Column, Integer, String, Text, DateTime,Numeric,ForeignKe
 from sqlalchemy.sql import func
 from app.db.session import Base
 from sqlalchemy.orm import relationship
+from app.models.associations import job_skills
 class Job(Base):
     __tablename__ = "jobs"
 
@@ -17,13 +18,13 @@ class Job(Base):
         index=True                    
     )
     company_id = Column( Integer,
-        ForeignKey("company.id",ondelete="SET NULL"),
+        ForeignKey("company.id",ondelete="SET NULL"), #Evita que eliminando una compañia se borren los trabajos
         nullable=True,
         index=True                  
     )
-    skills = relationship(
+    skills = relationship( #Tabla intermedia, ayuda a realizar los joins
         "Skill",
-        secondary="job_skills",
+        secondary=job_skills,
         back_populates="jobs"
     )
     company = relationship("Company",back_populates="jobs")
