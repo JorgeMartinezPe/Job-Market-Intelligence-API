@@ -11,7 +11,8 @@ class Job(Base):
     description = Column(Text)
     salary_max= Column(Numeric)
     salary_min = Column(Numeric)
-    published= Column(DateTime(timezone=True), server_default=func.now())
+    currency = Column(String)
+    published_at = Column(DateTime, server_default=func.now())
     location_id = Column(Integer,
         ForeignKey("location.id",ondelete="SET NULL"),
         nullable=True,
