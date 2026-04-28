@@ -21,3 +21,11 @@ class JobResponse(JobBase):
     model_config = {
         "from_attributes": True
     }
+
+class JobUpdate(BaseModel):
+    title: Optional[str] = None
+    description: Optional[str] = None
+    salary_min: Optional[float] = None
+    salary_max: Optional[float] = None
+    currency:   Optional[str] = None
+    skills: Optional[List[str]] = None

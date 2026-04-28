@@ -15,3 +15,4 @@ class JobService:
         self.db.commit()
         self.db.refresh(db_job)
         return db_job
+    
