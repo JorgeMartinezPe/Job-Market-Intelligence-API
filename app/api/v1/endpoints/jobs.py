@@ -45,7 +45,7 @@ def create_job(job: JobCreate, db: Annotated[Session, Depends(get_db)]):
         salary_max=job.salary_max,
         salary_min=job.salary_min,
         currency=job.currency,
-        location_id=location_id,  # ✅ corregido
+        location_id=location_id,
         company_id=job.company_id
     )
 
