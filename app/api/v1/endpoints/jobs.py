@@ -11,7 +11,7 @@ from app.models.locations import Location
 from typing import Annotated
 router = APIRouter()
 
-@router.post("/crear_trabajo")
+@router.post("/crear_trabajo",response_model=JobResponse)
 def create_job(job: JobCreate, db: Annotated[Session, Depends(get_db)]):
 
     # validar company
@@ -62,6 +62,9 @@ def create_job(job: JobCreate, db: Annotated[Session, Depends(get_db)]):
 @router.get("/all_jobs", response_model=list[JobResponse])
 def get_jobs(db: Annotated[Session, Depends(get_db)]):
     jobs = db.query(Job).all()
+    if not jobs:
+        raise HTTPException(status_code=404, detail="No jobs found")
+    
 
     return jobs
 
@@ -69,24 +72,39 @@ def get_jobs(db: Annotated[Session, Depends(get_db)]):
 @router.get("/jobs_by_id{id}",response_model=JobResponse)
 def get_jobs_by_id(id:int,db: Annotated[Session, Depends(get_db)]):
     job = db.query(Job).filter(Job.id==id).first()
+    if not job:
+        raise HTTPException(status_code=404,detail="No existe un trabajo con este id")
     return job
 
 #Update
-@router.post("/update_job{id}")
+@router.post("/update_job{id}",response_model=JobResponse)
 def update_job(id:int,job:JobUpdate,db: Annotated[Session, Depends(get_db)]):
     job_db = db.query(Job).filter(Job.id==id).first()
     if job_db is None:
         raise HTTPException(status_code=404, detail="Job not found")
-    job_db.title = job.title
-    job_db.description = job.description
-    job_db.salary_max = job.salary_max
-    job_db.salary_min = job.salary_min
+    
+    if job.title is not None:
+        job_db.title = job.title
+
+    if job.description is not None:
+        job_db.description = job.description
+
+    if job.salary_min is not None:
+        job_db.salary_min = job.salary_min
+
+    if job.salary_max is not None:
+        job_db.salary_max = job.salary_max
+
+    if job.skills is not None:
+        skills = get_or_create_skills(db, job.skills)
+        job_db.skills = skills
+
     skills = get_or_create_skills(db, job.skills)
     job_db.skills = skills
 
     db.commit()
     db.refresh(job_db)
-    return "Actualizado con exito"
+    return job_db
 
 #Delete
 @router.delete("/delete_job{id}")
