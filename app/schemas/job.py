@@ -1,6 +1,7 @@
 from pydantic import BaseModel
 from typing import Optional,List
 from app.schemas.skill import SkillResponse
+from app.schemas.locations import LocationCreate
 class JobBase(BaseModel):
     title: str
     description: Optional[str] = None
@@ -10,7 +11,7 @@ class JobBase(BaseModel):
     currency:   Optional[str] = None
     company_id: int
     location_id: int
-
+    location: Optional[LocationCreate] = None
     skills: List[SkillResponse]
 
 class JobCreate(JobBase):

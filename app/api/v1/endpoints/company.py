@@ -1,14 +1,14 @@
 from fastapi import APIRouter, Depends
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from typing import List
+from typing import List,Annotated
 from app.schemas.companies import CompanyCreate,CompanyResponse,CompanyUpdate
 from app.models.companies_db import Company
 router = APIRouter()
 
 #Create
 @router.post("/companies")
-def create_company(company:CompanyCreate,db:Session = Depends(get_db)):
+def create_company(company:CompanyCreate,db: Annotated[Session, Depends(get_db)]):
     new_company = Company(
         name=company.name,
         industry=company.industry, # De esta manera mediante el input del usuario se hace la insercion.
@@ -23,12 +23,12 @@ def create_company(company:CompanyCreate,db:Session = Depends(get_db)):
 
 #Select
 @router.get("/obtain_company",response_model=List[CompanyResponse])
-def obten_company(id:int,db:Session = Depends(get_db)):
+def obten_company(id:int,db: Annotated[Session, Depends(get_db)]):
     company = db.query(Company).filter(Company.id ==id).all()
     return company
 #Update
 @router.put("/update_company/{id}")
-def update_company(id:int,company:CompanyUpdate,db:Session = Depends(get_db)):
+def update_company(id:int,company:CompanyUpdate,db: Annotated[Session, Depends(get_db)]):
     company_db = db.query(Company).filter(Company.id == id).first() #Obtener de la base de datos
     if company_db is None: #Validar que existe
         return {"message": "Company not found"}
@@ -45,7 +45,7 @@ def update_company(id:int,company:CompanyUpdate,db:Session = Depends(get_db)):
 
 #delete
 @router.delete("/delete_company){id}")
-def delete_company(id:int,db:Session=Depends(get_db)):
+def delete_company(id:int,db: Annotated[Session, Depends(get_db)]):
 
     company_db = db.query(Company).filter(Company.id == id).first()
     if company_db is None:
