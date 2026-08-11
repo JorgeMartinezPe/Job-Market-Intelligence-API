@@ -11,9 +11,9 @@ class CompanyCreate(BaseModel):
 class CompanyResponse(BaseModel):
     id:int
     name:str
-    industry:str
-    size:str
-    website:str
+    industry: Optional[str] = None
+    size: Optional[str] = None
+    website: Optional[str] = None
     model_config = {
         "from_attributes": True
     }
