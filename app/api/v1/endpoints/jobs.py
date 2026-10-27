@@ -14,13 +14,14 @@ router = APIRouter()
 @router.post("/crear_trabajo",response_model=JobResponse)
 def create_job(job: JobCreate, db: Annotated[Session, Depends(get_db)]):
 
-    # validar company
-    company = db.query(Company).filter(Company.id == job.company_id).first()
-    if not company:
-        raise HTTPException(status_code=404, detail="Company not found")
+    # validar company (opcional)
+    if job.company_id is not None:
+        company = db.query(Company).filter(Company.id == job.company_id).first()
+        if not company:
+            raise HTTPException(status_code=404, detail="Company not found")
 
     # resolver location
-    if job.location_id:
+    if job.location_id is not None:
         location = db.query(Location).filter(Location.id == job.location_id).first()
         if not location:
             raise HTTPException(status_code=404, detail="Location not found")
@@ -40,13 +41,8 @@ def create_job(job: JobCreate, db: Annotated[Session, Depends(get_db)]):
 
     # crear job
     new_job = Job(
-        title=job.title,
-        description=job.description,
-        salary_max=job.salary_max,
-        salary_min=job.salary_min,
-        currency=job.currency,
+        **job.model_dump(exclude={"location", "location_id", "skills"}),
         location_id=location_id,
-        company_id=job.company_id
     )
 
     # skills
@@ -69,7 +65,7 @@ def get_jobs(db: Annotated[Session, Depends(get_db)]):
     return jobs
 
 
-@router.get("/jobs_by_id{id}",response_model=JobResponse)
+@router.get("/jobs_by_id/{id}",response_model=JobResponse)
 def get_jobs_by_id(id:int,db: Annotated[Session, Depends(get_db)]):
     job = db.query(Job).filter(Job.id==id).first()
     if not job:
@@ -77,37 +73,25 @@ def get_jobs_by_id(id:int,db: Annotated[Session, Depends(get_db)]):
     return job
 
 #Update
-@router.post("/update_job{id}",response_model=JobResponse)
+@router.put("/update_job/{id}",response_model=JobResponse)
 def update_job(id:int,job:JobUpdate,db: Annotated[Session, Depends(get_db)]):
     job_db = db.query(Job).filter(Job.id==id).first()
     if job_db is None:
         raise HTTPException(status_code=404, detail="Job not found")
     
-    if job.title is not None:
-        job_db.title = job.title
-
-    if job.description is not None:
-        job_db.description = job.description
-
-    if job.salary_min is not None:
-        job_db.salary_min = job.salary_min
-
-    if job.salary_max is not None:
-        job_db.salary_max = job.salary_max
+    # Solo se modifican los campos enviados
+    for field, value in job.model_dump(exclude_unset=True, exclude={"skills"}).items():
+        setattr(job_db, field, value)
 
     if job.skills is not None:
-        skills = get_or_create_skills(db, job.skills)
-        job_db.skills = skills
-
-    skills = get_or_create_skills(db, job.skills)
-    job_db.skills = skills
+        job_db.skills = get_or_create_skills(db, job.skills)
 
     db.commit()
     db.refresh(job_db)
     return job_db
 
 #Delete
-@router.delete("/delete_job{id}")
+@router.delete("/delete_job/{id}")
 def delete_job(id:int,db: Annotated[Session, Depends(get_db)]):
     job_db = db.query(Job).filter(Job.id==id).first()
     if job_db is None:

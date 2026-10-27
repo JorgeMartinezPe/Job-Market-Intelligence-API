@@ -1,6 +1,7 @@
 from sqlalchemy.orm import Session
 from app.models.job import Job as JobModel
-from app.schemas.job import Job as JobSchema, JobCreate
+from app.schemas.job import JobCreate
+
 
 class JobService:
     def __init__(self, db: Session):
@@ -10,9 +11,8 @@ class JobService:
         return self.db.query(JobModel).all()
 
     def create_job(self, job: JobCreate):
-        db_job = JobModel(**job.dict())
+        db_job = JobModel(**job.model_dump(exclude={"location", "skills"}))
         self.db.add(db_job)
         self.db.commit()
         self.db.refresh(db_job)
         return db_job
-    

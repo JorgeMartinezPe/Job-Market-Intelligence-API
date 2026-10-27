@@ -1,55 +1,55 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.db.session import get_db
-from typing import List,Annotated
-from app.schemas.companies import CompanyCreate,CompanyResponse,CompanyUpdate
+from typing import Annotated
+from app.schemas.companies import CompanyCreate, CompanyResponse, CompanyUpdate
 from app.models.companies_db import Company
+
 router = APIRouter()
 
-#Create
-@router.post("/companies")
-def create_company(company:CompanyCreate,db: Annotated[Session, Depends(get_db)]):
-    new_company = Company(
-        name=company.name,
-        industry=company.industry, # De esta manera mediante el input del usuario se hace la insercion.
-        size=company.size,
-        website=company.website
-    )
-    
+
+# Create
+@router.post("", response_model=CompanyResponse, status_code=201)
+def create_company(company: CompanyCreate, db: Annotated[Session, Depends(get_db)]):
+    new_company = Company(**company.model_dump())
+
     db.add(new_company)
     db.commit()
     db.refresh(new_company)
+    return new_company
+
+
+# Select
+@router.get("/obtain_company", response_model=CompanyResponse)
+def obten_company(id: int, db: Annotated[Session, Depends(get_db)]):
+    company = db.query(Company).filter(Company.id == id).first()
+    if company is None:
+        raise HTTPException(status_code=404, detail="Company not found")
     return company
 
-#Select
-@router.get("/obtain_company",response_model=List[CompanyResponse])
-def obten_company(id:int,db: Annotated[Session, Depends(get_db)]):
-    company = db.query(Company).filter(Company.id ==id).all()
-    return company
-#Update
-@router.put("/update_company/{id}")
-def update_company(id:int,company:CompanyUpdate,db: Annotated[Session, Depends(get_db)]):
-    company_db = db.query(Company).filter(Company.id == id).first() #Obtener de la base de datos
-    if company_db is None: #Validar que existe
-        return {"message": "Company not found"}
-    
-    company_db.name = company.name #Campos que se requeiren modificar, en el schema son opcionales.
-    company_db.industry = company.industry
-    company_db.size = company.size
-    company_db.website = company.website
-    
-    db.commit()
-    db.refresh(company_db)
-    
-    return {"message": "Company updated successfully", "company": company_db}
 
-#delete
-@router.delete("/delete_company){id}")
-def delete_company(id:int,db: Annotated[Session, Depends(get_db)]):
-
+# Update
+@router.put("/update_company/{id}", response_model=CompanyResponse)
+def update_company(id: int, company: CompanyUpdate, db: Annotated[Session, Depends(get_db)]):
     company_db = db.query(Company).filter(Company.id == id).first()
     if company_db is None:
-        return {"message": "Company not found"}
+        raise HTTPException(status_code=404, detail="Company not found")
+
+    # Solo se modifican los campos enviados por el usuario
+    for field, value in company.model_dump(exclude_unset=True).items():
+        setattr(company_db, field, value)
+
+    db.commit()
+    db.refresh(company_db)
+    return company_db
+
+
+# Delete
+@router.delete("/delete_company/{id}")
+def delete_company(id: int, db: Annotated[Session, Depends(get_db)]):
+    company_db = db.query(Company).filter(Company.id == id).first()
+    if company_db is None:
+        raise HTTPException(status_code=404, detail="Company not found")
     db.delete(company_db)
     db.commit()
-    return {"Message":"Company has been deleting successfully","comapny":company_db}
+    return {"message": "Company deleted successfully"}

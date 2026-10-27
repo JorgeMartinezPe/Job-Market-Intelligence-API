@@ -108,3 +108,6 @@ dmypy.json
 # IDE
 .vscode/
 .idea/
+
+# Documentacion local de cambios (no se sube)
+docs_local/

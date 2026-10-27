@@ -7,7 +7,7 @@ class Company(Base):
     __tablename__ = "company"
 
     id = Column(Integer,primary_key=True,index=True)
-    name = Column(Text, nullable=False)
+    name = Column(Text, nullable=True)  # opcional: un usuario puede analizar un trabajo sin indicar empresa
     industry = Column(Text)
     size = Column(Text)
     website = Column(Text)

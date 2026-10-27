@@ -18,7 +18,6 @@ El mercado tech cambia constantemente. Este proyecto busca responder preguntas c
 - PostgreSQL
 - SQLAlchemy
 - Pydantic
-- Docker
 - GitHub Actions (CI/CD)
 
 ---
