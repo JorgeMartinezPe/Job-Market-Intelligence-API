@@ -1,24 +1,23 @@
+from typing import Optional
+
 from app.models.locations import Location
+from app.repositories.location_repository import LocationRepository
 
 
-def get_or_create_location(db, country, state, city):
-    country = country.strip().lower()
-    state = state.strip().lower() if state else None
-    city = city.strip().lower() if city else None
+class LocationService:
+    def __init__(self, repository: LocationRepository):
+        self.repository = repository
 
-    location = db.query(Location).filter_by(
-        country=country,
-        state=state,
-        city=city
-    ).first()
+    def get_or_create(
+        self, country: str, state: Optional[str], city: Optional[str]
+    ) -> Location:
+        country = country.strip().lower()
+        state = state.strip().lower() if state else None
+        city = city.strip().lower() if city else None
 
-    if not location:
-        location = Location(
-            country=country,
-            state=state,
-            city=city
-        )
-        db.add(location)
-        db.flush()
-
-    return location
+        location = self.repository.find_by_fields(country, state, city)
+        if not location:
+            location = self.repository.add(
+                Location(country=country, state=state, city=city)
+            )
+        return location

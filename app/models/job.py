@@ -3,6 +3,8 @@ from sqlalchemy.sql import func
 from app.db.session import Base
 from sqlalchemy.orm import relationship
 from app.models.associations import job_skills
+
+
 class Job(Base):
     __tablename__ = "jobs"
 
