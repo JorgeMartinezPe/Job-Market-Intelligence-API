@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 from typing import List
 
 from app.core.exceptions import NotFoundError, ValidationError
@@ -8,6 +9,11 @@ from app.repositories.location_repository import LocationRepository
 from app.schemas.job import JobCreate, JobUpdate
 from app.services.location_service import LocationService
 from app.services.skill_service import SkillService
+=======
+from sqlalchemy.orm import Session
+from app.models.job import Job as JobModel
+from app.schemas.job import JobCreate
+>>>>>>> eccfe6b12233fb220f13d162ecbea7c7868cc263
 
 
 class JobService:
@@ -28,6 +34,7 @@ class JobService:
         self.location_service = location_service
         self.skill_service = skill_service
 
+<<<<<<< HEAD
     def create_job(self, data: JobCreate) -> Job:
         company = self.company_repository.get(data.company_id)
         if not company:
@@ -99,3 +106,11 @@ class JobService:
         job = self.get_by_id(job_id)
         self.job_repository.delete(job)
         self.job_repository.commit()
+=======
+    def create_job(self, job: JobCreate):
+        db_job = JobModel(**job.model_dump(exclude={"location", "skills"}))
+        self.db.add(db_job)
+        self.db.commit()
+        self.db.refresh(db_job)
+        return db_job
+>>>>>>> eccfe6b12233fb220f13d162ecbea7c7868cc263

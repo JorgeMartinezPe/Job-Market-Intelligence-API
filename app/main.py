@@ -6,11 +6,15 @@ from sqlalchemy.orm import Session
 from app.api.v1.api import api_router
 from app.core.exceptions import NotFoundError, ValidationError
 from app.db.session import get_db
+from fastapi import FastAPI
+
+from app.api.v1.api import api_router
+from app.core.config import settings
 
 app = FastAPI(
-    title="Job Market Intelligence API",
-    description="API for analyzing job market data",
-    version="1.0.0"
+    title=settings.PROJECT_NAME,
+    description=settings.DESCRIPTION,
+    version=settings.VERSION,
 )
 
 app.include_router(api_router, prefix="/api/v1")
