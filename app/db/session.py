@@ -1,7 +1,6 @@
 from functools import lru_cache
 
 from sqlalchemy import create_engine
-<<<<<<< HEAD
 from sqlalchemy.orm import declarative_base
 from sqlalchemy.orm import sessionmaker
 from app.core.config import settings
@@ -12,11 +11,6 @@ SessionLocal = sessionmaker( #crear la sesion y pasarle todos los datos
     autoflush=False,
     bind=engine
 )
-=======
-from sqlalchemy.orm import declarative_base, sessionmaker
-
-from app.core.config import settings
->>>>>>> eccfe6b12233fb220f13d162ecbea7c7868cc263
 
 Base = declarative_base()
 
