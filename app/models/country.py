@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, Text
+from sqlalchemy import Column, Integer, Text,Boolean
 from app.db.session import Base
 
 
@@ -7,7 +7,7 @@ class country(Base):
     __tablename__ = "country"
 
     id = Column(Integer, primary_key=True, index=True)
-    code_mx = Column (Text, index=True, nullable=False)
-    currency_code = Column(Text,nullable=False)
-    denomination = Column(String,nullable=False)
+    Code = Column(Text,nullable=False)
+    Name = Column(Text,nullable=False)
+    status = Column(Boolean,nullable=False)
 
