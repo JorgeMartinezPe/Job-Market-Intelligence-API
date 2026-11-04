@@ -23,7 +23,7 @@ from app.db.session import Base
 import app.models  # noqa: F401  (registra todos los modelos en Base.metadata)
 
 # La URL sale de DATABASE_URL (.env), no de alembic.ini
-config.set_main_option("sqlalchemy.url", settings.database_url.replace("%", "%%"))
+config.set_main_option("sqlalchemy.url", settings.DATABASE_URL.replace("%", "%%"))
 
 target_metadata = Base.metadata
 

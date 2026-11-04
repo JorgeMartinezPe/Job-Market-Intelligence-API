@@ -3,11 +3,11 @@ from app.db.session import Base
 
 
 
-class country(Base):
+class Country(Base):
     __tablename__ = "country"
 
     id = Column(Integer, primary_key=True, index=True)
-    Code = Column(Text,nullable=False)
-    Name = Column(Text,nullable=False)
+    code = Column(Text,nullable=False,unique=True)
+    name = Column(Text,nullable=False,unique=True)
     status = Column(Boolean,nullable=False)
 

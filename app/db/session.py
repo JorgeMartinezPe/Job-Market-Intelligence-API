@@ -19,7 +19,7 @@ SessionLocal = sessionmaker(autocommit=False, autoflush=False)
 
 @lru_cache
 def get_engine():
-    return create_engine(settings.database_url)
+    return create_engine(settings.DATABASE_URL)
 
 
 def get_db():
