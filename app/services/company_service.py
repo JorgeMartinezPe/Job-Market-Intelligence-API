@@ -1,8 +1,8 @@
-from app.core.exceptions import NotFoundError
+from app.core.exceptions import NotFoundError, ValidationError
 from app.models.companies_db import Company
 from app.repositories.company_repository import CompanyRepository
 from app.schemas.companies import CompanyCreate, CompanyUpdate
-
+from sqlalchemy import select
 
 class CompanyService:
     def __init__(self, repository: CompanyRepository):
@@ -10,10 +10,14 @@ class CompanyService:
 
     def create(self, data: CompanyCreate) -> Company:
         new_company = Company(**data.model_dump())
+
+        
+        
         self.repository.add(new_company)
         self.repository.commit()
         self.repository.refresh(new_company)
         return new_company
+
 
     def get_by_id(self, company_id: int) -> Company:
         company = self.repository.get(company_id)

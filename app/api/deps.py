@@ -17,6 +17,8 @@ from app.services.company_service import CompanyService
 from app.services.job_service import JobService
 from app.services.location_service import LocationService
 from app.services.skill_service import SkillService
+from app.repositories.country_repository import CountryRepository
+from app.services.country_service import CountryService
 
 DbSession = Annotated[Session, Depends(get_db)]
 
@@ -36,6 +38,8 @@ def get_location_repository(db: DbSession) -> LocationRepository:
 def get_skill_repository(db: DbSession) -> SkillRepository:
     return SkillRepository(db)
 
+def get_country_repository(db:DbSession)-> CountryRepository:
+    return CountryRepository(db)
 
 def get_location_service(
     repository: Annotated[LocationRepository, Depends(get_location_repository)],
@@ -69,3 +73,8 @@ def get_company_service(
     repository: Annotated[CompanyRepository, Depends(get_company_repository)],
 ) -> CompanyService:
     return CompanyService(repository)
+
+def get_country_service(
+        repository: Annotated[CountryRepository, Depends(get_country_repository)],
+)->CountryService:
+    return CountryService(repository)
