@@ -11,7 +11,7 @@ router = APIRouter()
 CompanyServiceDep = Annotated[CompanyService, Depends(get_company_service)]
 
 
-@router.post("/", response_model=CompanyResponse, status_code=201)
+@router.post("/", response_model=CompanyResponse, status_code=200)
 def create_company(company: CompanyCreate, service: CompanyServiceDep):
     return service.create(company)
 
