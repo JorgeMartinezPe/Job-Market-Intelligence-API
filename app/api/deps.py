@@ -41,6 +41,10 @@ def get_skill_repository(db: DbSession) -> SkillRepository:
 def get_country_repository(db:DbSession)-> CountryRepository:
     return CountryRepository(db)
 
+def get_location_repository(db:DbSession)-> LocationRepository:
+    return LocationRepository(db)
+
+
 def get_location_service(
     repository: Annotated[LocationRepository, Depends(get_location_repository)],
 ) -> LocationService:
